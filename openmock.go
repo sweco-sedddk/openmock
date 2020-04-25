@@ -29,12 +29,15 @@ type OpenMock struct {
 	RedisType             string   `env:"OPENMOCK_REDIS_TYPE" envDefault:"memory"`
 	RedisURL              string   `env:"OPENMOCK_REDIS_URL" envDefault:"redis://redis:6379"`
 	CorsEnabled           bool     `env:"OPENMOCK_CORS_ENABLED" envDefault:"false"`
+	GRPCEnabled           bool     `env:"OPENMOCK_GRPC_ENABLED" envDefault:"true"`
+	GRPCPort              int      `env:"OPENMOCK_GRPC_PORT" envDefault:"50051"`
+	GRPCHost              string   `env:"OPENMOCK_GRPC_HOST" envDefault:"0.0.0.0"`
 
 	// Customized pipeline functions
 	KafkaConsumePipelineFunc KafkaPipelineFunc
 	KafkaPublishPipelineFunc KafkaPipelineFunc
 
-	// Prviates
+	// Privates
 	repo        *MockRepo
 	kafkaClient *kafkaClient
 	redis       RedisDoer
@@ -70,6 +73,7 @@ func (om *OpenMock) SetupRepo() {
 		HTTPMocks:  HTTPMocks{},
 		KafkaMocks: KafkaMocks{},
 		AMQPMocks:  AMQPMocks{},
+		GRPCMocks:  GRPCMocks{},
 		Templates:  MocksArray{},
 		Behaviors:  map[string]*Mock{},
 	}
@@ -95,6 +99,9 @@ func (om *OpenMock) Start() {
 	}
 	if om.AMQPEnabled {
 		go om.startAMQP()
+	}
+	if om.GRPCEnabled {
+	    go om.startGRPC()
 	}
 
 	if om.TemplatesDirHotReload {
