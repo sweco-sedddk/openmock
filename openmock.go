@@ -101,7 +101,7 @@ func (om *OpenMock) Start() {
 		go om.startAMQP()
 	}
 	if om.GRPCEnabled {
-	    go om.startGRPC()
+		go om.startGRPC()
 	}
 
 	if om.TemplatesDirHotReload {
