@@ -69,7 +69,15 @@ func (kc *kafkaClient) close() error {
 }
 
 func (om *OpenMock) configKafka() error {
-	producer, err := sarama.NewSyncProducer(om.KafkaSeedBrokers, nil)
+
+	conf := sarama.NewConfig()
+	conf.Producer.Retry.Max = 1
+	conf.Producer.RequiredAcks = sarama.WaitForAll
+	conf.Producer.Return.Successes = true
+	conf.Metadata.Full = true
+	conf.Version = sarama.V0_10_0_0
+
+	producer, err := sarama.NewSyncProducer(om.KafkaSeedBrokers, conf)
 	if err != nil {
 		return err
 	}
